@@ -35,6 +35,10 @@ public class Server {
         } finally {
             try {
                 socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
                 server.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -49,29 +53,53 @@ public class Server {
         }
     }
 
+    public void privateMsg(ClientHandler sender, String receiver, String msg) {
+        String message = String.format("[ %s ] private [ %s ] : %s", sender.getNickname(), receiver, msg);
+        for (ClientHandler c : clients) {
+            if (c.getNickname().equals(receiver)) {
+                c.sendMsg(message);
+                if (!sender.getNickname().equals(receiver)) {
+                    sender.sendMsg(message);
+                }
+                return;
+            }
+        }
+        sender.sendMsg(String.format("Server: Client %s not found", receiver));
+    }
+
     public void subscribe(ClientHandler clientHandler) {
         clients.add(clientHandler);
+        broadcastClientList();
     }
 
     public void unsubscribe(ClientHandler clientHandler) {
         clients.remove(clientHandler);
+        broadcastClientList();
     }
 
     public AuthService getAuthService() {
         return authService;
     }
 
-    public void privateMsg(ClientHandler ch, String nick, String msg) {
-        String message = String.format("[ %s ] private [ %s ]: %s", ch.getNickname(), nick, msg);
+    public boolean isLoginAuthenticated(String login) {
         for (ClientHandler c : clients) {
-            if (c.getNickname().equals(nick)) {
-                c.sendMsg(message);
-                if (!ch.getNickname().equals(nick)) {
-                    ch.sendMsg(message);
-                }
-                return;
+            if (c.getLogin().equals(login)) {
+                return true;
             }
         }
-        ch.sendMsg(String.format("Server: Client %s not found", nick));
+        return false;
+    }
+
+    public void broadcastClientList() {
+        StringBuilder sb = new StringBuilder("/clientlist ");
+
+        for (ClientHandler c : clients) {
+            sb.append(c.getNickname()).append(" ");
+        }
+//        sb.setLength(sb.length() );
+        String message = sb.toString();
+        for (ClientHandler c : clients) {
+            c.sendMsg(message);
+        }
     }
 }
