@@ -56,10 +56,12 @@ public class ClientHandler {
                             break;
                         }
                         if (str.startsWith("/w ")) {
-                            String[] personal = str.split("\\s");
-                            if (getNickname().equals(personal[1]))
-                            server.sendClient(this, str);
-                            } else {
+                            String[] personal = str.split("\\s", 3);
+                            if (personal.length < 3) {
+                                continue;
+                            }
+                            server.privateMsg(this, personal[1], personal[2]);
+                        } else {
                             server.broadcastMsg(this, str);
                         }
 

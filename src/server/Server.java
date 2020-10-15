@@ -61,12 +61,17 @@ public class Server {
         return authService;
     }
 
-    public void sendClient (ClientHandler ch, String msg) {
-        String message = String.format("[ %s ]: %s", ch.getNickname(), msg);
-        if (clients.contains(ch)){
-            ch.sendMsg(message);
-        } else {
-            ch.sendMsg("Клиент отсутствует в сети");
+    public void privateMsg(ClientHandler ch, String nick, String msg) {
+        String message = String.format("[ %s ] private [ %s ]: %s", ch.getNickname(), nick, msg);
+        for (ClientHandler c : clients) {
+            if (c.getNickname().equals(nick)) {
+                c.sendMsg(message);
+                if (!ch.getNickname().equals(nick)) {
+                    ch.sendMsg(message);
+                }
+                return;
+            }
         }
+        ch.sendMsg(String.format("Server: Client %s not found", nick));
     }
 }
