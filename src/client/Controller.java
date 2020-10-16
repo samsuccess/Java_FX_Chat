@@ -17,9 +17,11 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import server.ClientHandler;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
@@ -105,6 +107,9 @@ public class Controller implements Initializable {
                     while (true) {
                         String str = in.readUTF();
 
+                        if (str.startsWith("/timeout")) {
+                            break;
+                        }
                         if (str.startsWith("/authok ")) {
                             nickname = str.split("\\s")[1];
                             setAuthenticated(true);
@@ -114,7 +119,7 @@ public class Controller implements Initializable {
                         if (str.startsWith("/regok")) {
                             regController.addMessageTextArea("Регистрация прошла успешно");
                         }
-                        if (str.startsWith("/regno")){
+                        if (str.startsWith("/regno")) {
                             regController.addMessageTextArea("Зарегистрироватся не удалось\n" +
                                     " возможно такой логин или никнейм уже заняты");
                         }
@@ -143,9 +148,15 @@ public class Controller implements Initializable {
                             textArea.appendText(str + "\n");
                         }
                     }
+
+                } catch (EOFException eof) {
+
+                    System.out.println("Client disconnected by timeout");
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
+                    textArea.appendText("Client disconnected by timeout");
                     setAuthenticated(false);
                     try {
                         socket.close();
