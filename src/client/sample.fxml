@@ -9,8 +9,12 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.ListView?>
+<?import java.net.URL?>
 <VBox fx:controller="client.Controller"
       xmlns:fx="http://javafx.com/fxml" alignment="center">
+    <stylesheets>
+        <URL value="@/css/style.css"/>
+    </stylesheets>
     <HBox fx:id="authPanel">
         <TextField promptText="login" fx:id="loginField" HBox.hgrow="ALWAYS"/>
         <PasswordField fx:id="passwordField" promptText="password" HBox.hgrow="ALWAYS" onAction="#tryToAuth"/>

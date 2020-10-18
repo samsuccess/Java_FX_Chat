@@ -150,13 +150,11 @@ public class Controller implements Initializable {
                     }
 
                 } catch (EOFException eof) {
-
                     System.out.println("Client disconnected by timeout");
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
-                    textArea.appendText("Client disconnected by timeout");
                     setAuthenticated(false);
                     try {
                         socket.close();

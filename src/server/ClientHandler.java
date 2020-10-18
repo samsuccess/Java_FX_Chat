@@ -88,7 +88,7 @@ public class ClientHandler {
                     }
                 } catch (SocketTimeoutException ste) {
                     sendMsg("/timeout");
-
+                    System.out.println("Client disconnected by timeout");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
